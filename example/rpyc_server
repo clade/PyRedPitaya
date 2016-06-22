@@ -1,0 +1,8 @@
+#!/usr/bin/python
+
+from PyRedPitaya.service import Myservice
+
+from rpyc.utils.service import ThreadedServer
+print 'START SERVER'
+t = ThreadedServer(MyService, port = 18861)
+t.start()
