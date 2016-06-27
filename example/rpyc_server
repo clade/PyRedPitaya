@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from PyRedPitaya.service import Myservice
+from PyRedPitaya.service import MyService
 
 from rpyc.utils.service import ThreadedServer
 print 'START SERVER'
