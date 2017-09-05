@@ -150,5 +150,6 @@ setup(name='PyRedPitaya',
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules'],
+      use_2to3=True,
       keywords=['redpitaya', 'FPGA', 'zynq'],
      )
