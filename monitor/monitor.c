@@ -33,7 +33,7 @@
   __LINE__, __FILE__, errno, strerror(errno)); exit(1); } while(0)
  
 //#define MAP_SIZE 4096UL
-#define MAP_SIZE 65536UL
+#define MAP_SIZE 1048576UL
 #define MAP_MASK (MAP_SIZE - 1)
 
 #define DEBUG_MONITOR 0
