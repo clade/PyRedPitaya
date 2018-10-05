@@ -7,49 +7,6 @@ from distutils.command.install import install
 
 from PyRedPitaya import __version__
 
-dir = os.path.dirname(__file__)
-os.chdir(dir or '.')
-
-# If we want to overrid the build processe
-# For example, to compile de libmonitor and install it
-# Install libmonitor only for redpitaya, i.e. when 
-
-build_dir = "monitor/"
-
-def compile_libmonitor():
-    cwd = os.getcwd() # get current directory
-    try:
-        os.chdir(build_dir)
-        os.system("make clean")
-        os.system("make all")
-    finally:
-        os.chdir(cwd)
-
-def install_libmonitor(prefix=''):
-    cwd = os.getcwd() # get current directory
-    try:
-        os.chdir(build_dir)
-        os.system("make install INSTALL_DIR={prefix}".format(prefix=prefix))
-    finally:
-        os.chdir(cwd)
-
-
-class lib_build(build):
-    def run(self):
-        compile_libmonitor()
-        build.run(self)
-
-class lib_install(install):
-    def run(self):
-        compile_libmonitor()
-        install_libmonitor(self.prefix)
-#        install.run(self)
-
-
-cmdclass = {}
-cmdclass['lib_build'] = lib_build
-cmdclass['lib_install'] = lib_install
-
 long_description = """\
 Overview
 ========
@@ -137,7 +94,6 @@ setup(name='PyRedPitaya',
       packages=['PyRedPitaya', 'PyRedPitaya.enum'],
       install_requires=['myhdl', 'rpyc', 'cached_property', 'numpy'],
       long_description=long_description,
-      cmdclass=cmdclass, 
       classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
