@@ -234,10 +234,10 @@ class Scope(MemoryInterface):
     
     @property
     def data_ch1(self):
-        return np.roll(self.rawdata_ch1,-int(self.write_pointer_trigger))
+        return np.roll(self.rawdata_ch1,-int(self.write_pointer_current))
     @property
     def data_ch2(self):
-        return np.roll(self.rawdata_ch2,-int(self.write_pointer_trigger))
+        return np.roll(self.rawdata_ch2,-int(self.write_pointer_current))
     
 
     # helpers
