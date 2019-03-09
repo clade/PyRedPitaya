@@ -605,4 +605,4 @@ if __name__=="__main__":
     sleep(1)
     t0 = time()
     red_pitaya.scope.data_ch1
-    print time() - t0
+    print(time() - t0)
