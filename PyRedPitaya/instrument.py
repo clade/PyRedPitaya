@@ -1,4 +1,5 @@
 from math import log, ceil
+from time import sleep
 
 import numpy as np
 from myhdl import intbv
@@ -7,6 +8,9 @@ from myhdl import intbv
 
 from .memory import MemoryInterface
 from .enum import Enum
+
+class Timeout(Exception):
+    pass
 
 
 class UnsignedInteger(object):
@@ -234,49 +238,86 @@ class Scope(MemoryInterface):
     
     @property
     def data_ch1(self):
-        return np.roll(self.rawdata_ch1,-int(self.write_pointer_current))
+        current = self.write_pointer_current
+#        print("CH1:", current)
+        return np.roll(self.rawdata_ch1,-int(current)-1)/2.**13
     @property
     def data_ch2(self):
-        return np.roll(self.rawdata_ch2,-int(self.write_pointer_current))
+        current = self.write_pointer_current
+#        print("CH2:", current)
+        return np.roll(self.rawdata_ch2,-int(current)-1)/2.**13
     
 
     # helpers
     @property
     def times(self):
-        return np.linspace(0.0,8e-9*self.data_decimation*float(self.data_length),self.data_length,endpoint=False)
+        delay = self.trigger_delay        
+        if delay>0:
+            out = np.arange(-self.data_length, 0) + delay
+        else:
+            out = np.arange(self.data_length)
+        return out*self.data_decimation*8E-9
     
-    def setup(self,frequency=1,trigger_source=TriggerSource.immediately):
+    def setup(self, data_decimation=1, trigger_source=TriggerSource.immediately, 
+            trigger_delay=None, arm=True):
+        assert data_decimation in [1,8,64,1024,8192,65536], "data_decimation should be in [1,8,64,1024,8192,65536]"
         self.reset_writestate_machine(v=True)
-        self.trigger_delay = self.data_length
         self.arm_trigger(v=False)
+        if trigger_delay is None:
+            self.trigger_delay = 2**13
+        else:
+            self.trigger_delay = int(2**14 - trigger_delay/(8e-9*data_decimation))
+        self.data_decimation = data_decimation
         self.average = True
-        self.frequency = frequency
-        self.trigger_source = trigger_source
+#        self.trigger_source = trigger_source
         self.reset_writestate_machine(v=False)
-        self.arm_trigger()
+        if arm:
+            self.rearm(trigger_source)
+
+#    _current_trigger_source=None
+#    @property
+#    def current_trigger_source(self):
+#        print('READ', self._current_trigger_source)
+
+#        if self._current_trigger_source is None:
+#            raise Exception('Please configure the scope')
+#        return self._current_trigger_source
+
+#    @current_trigger_source.setter
+#    def current_trigger_source(self, val):
+#        print('COUCOU', val)
+#        self._current_trigger_source = val
+#        print(self._current_trigger_source)
     
-    def rearm(self,frequency=None,trigger_source = 8):
-        if not frequency is None:
-            self.frequency = frequency
-        self.trigger_delay = self.data_length
+    def rearm(self, trigger_source):
+        if isinstance(trigger_source, str):
+            trigger_source = getattr(TriggerSource, trigger_source)
+        self.trigger_source = 0
+        self.arm_trigger()
         self.trigger_source = trigger_source
-        self.arm_trigger()
-    
-    @property
-    def frequency(self):
-        return 1.0/float(self.data_decimation)/float(self.data_length)/8e-9
-    
-    @frequency.setter
-    def frequency(self, v):
-        fbase = 125e6/float(2**14)
-        factors = [1,8,64,1024,8192,65536,65537]
-        for f in factors:
-            if v > fbase/float(f):
-                self.data_decimation = f
-                break
-            if f == 65537:
-                self.data_decimation = 65536
-                print "Frequency too low: Impossible to sample the entire waveform"
+
+    def wait_for_trigger(self, step=.1, timeout=10):
+        N = int(timeout/step)
+        for _ in range(N):
+            if self.trigger_source==0:
+                return
+            sleep(step)
+        raise Timeout()
+#    @property
+#    def frequency(self):
+#        return 1.0/float(self.data_decimation)/float(self.data_length)/8e-9
+#    
+#    @frequency.setter
+#    def frequency(self, v):
+#        fbase = 125e6/float(2**14)
+#        factors = [1,8,64,1024,8192,65536,65537]
+#        for f in factors:
+#            if v > fbase/float(f):
+#                self.data_decimation = f
+#                break
+#            if f == 65537:
+#                self.data_decimation = 65536
+#                print "Frequency too low: Impossible to sample the entire waveform"
 
 
             
