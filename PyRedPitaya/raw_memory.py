@@ -46,9 +46,9 @@ class BoardRawMemory(object):
         """Write length words in memory
 
         input : values should be a list, np.array of numbers or a str (interpreted as a string buffer)"""
-        if not isinstance(values, str):
+        if not isinstance(values, bytes):
             values = np.array(values, dtype='uint32')
-            values = str(values.data)
+            values = bytes(values.data)
         buf = create_string_buffer(values)
         self.a.write_values(addr, cast(buf, POINTER(ctypes.c_uint32)), len(values)//4)
 
@@ -56,12 +56,12 @@ class BoardRawMemory(object):
         """Write length words in memory
 
         input : addrs and values should be a list, np.array of numbers or a str (interpreted as a string buffer)"""
-        if not isinstance(values, str):
+        if not isinstance(values, bytes):
             values = np.array(values, dtype='uint32')
-            values = str(values.data)
-        if not isinstance(addrs, str):
+            values = bytes(values.data)
+        if not isinstance(addrs, bytes):
             addrs = np.array(addrs, dtype='uint32')
-            addrs = str(addrs.data)
+            addrs = bytes(addrs.data)
 
         buf_val = create_string_buffer(values)
         buf_add = create_string_buffer(addrs)
@@ -74,10 +74,10 @@ class BoardRawMemory(object):
         input : addrs should be a list, np.array of numbers or a str (interpreted as a string buffer)
         output : either an array on uint32 or a string buffer"""
 #        t0 = time()
-        if not isinstance(addrs, str):
+        if not isinstance(addrs, bytes):
             addrs = np.array(addrs, dtype='uint32')
             length = len(addrs)
-            addrs = str(addrs.data)
+            addrs = bytes(addrs.data)
         else:
             length = len(addrs)//4
         buf = create_string_buffer(sizeof(ctypes.c_uint32)*length)

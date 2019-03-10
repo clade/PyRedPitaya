@@ -1,7 +1,7 @@
 from __future__ import print_function
 import rpyc
 
-from raw_memory import BoardRawMemory
+from .raw_memory import BoardRawMemory
 
 class MyService(rpyc.Service):
     def on_connect(self):

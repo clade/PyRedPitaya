@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 
 from distutils.core import setup
 from distutils.command.build import build
@@ -108,4 +109,5 @@ setup(name='PyRedPitaya',
         'Topic :: Software Development :: Libraries :: Python Modules'],
 #      use_2to3=True,
       keywords=['redpitaya', 'FPGA', 'zynq'],
+      scripts=['example/rpyc_server3'] if sys.version_info >= (3, 0) else ['example/rpyc_server'],
      )
