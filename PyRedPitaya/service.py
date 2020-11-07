@@ -4,9 +4,10 @@ import rpyc
 from .raw_memory import BoardRawMemory
 
 class MyService(rpyc.Service):
-    def on_connect(self):
+    def on_connect(self, conn):
         print("CONNECTION")
         self._mem = BoardRawMemory()
+        self._conn = conn
         self._conn._config.update(dict(
             allow_all_attrs = True,
             allow_pickle = False,
