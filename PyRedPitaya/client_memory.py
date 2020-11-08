@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 
 class ClientMemory(object):
@@ -19,12 +20,15 @@ class ClientMemory(object):
             return np.frombuffer(out, dtype='uint32')
 
     def write(self, addr, value):
+        logging.debug('Write : ' + hex(addr) + '  ' + hex(value))
+
         self.remote_interface.write(addr, value)
 
     def writes(self, addr, values):
         if not isinstance(values, bytes):
             values = np.array(values, dtype='uint32')
             values = bytes(values.data)
+        logging.debug('Writes : ' + hex(addr) + '  ' + repr(values))
         self.remote_interface.writes(addr, values)
 
     def writes_many_addr(self, addrs, values):
@@ -38,6 +42,7 @@ class ClientMemory(object):
             addrs = np.array(addrs, dtype='uint32')
             addrs = bytes(addrs.data)
 
+        logging.debug('Write many addr : ' + repr(addrs) + '  ' + repr(values))
         self.remote_interface.writes_many_addr(addrs, values)
 
     def reads_many_addr(self, addrs, return_buffer=False):
