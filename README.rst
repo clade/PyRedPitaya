@@ -61,16 +61,15 @@ On the computer (replace REDPITAYA_IP by the string containing the IP address) :
     conn = connect(REDPITAYA_IP, port=18861)
     redpitaya = RedPitaya(conn)
 
-    print redpitaya.read(0x40000000) # Direct access
+    print(redpitaya.read(0x40000000)) # Direct access
 
-    print redpitaya.ams.temp # Read property
-    redpitaya.hk.led = 0b10101010 # Write property
+    print(redpitaya.ams.temp) # Read property
 
     from time import sleep
-    from pylab import *
+    import matplotlib.pyplot as plt
 
-    redpitaya.scope.setup(frequency = 100, trigger_source=1)
+    redpitaya.scope.setup(data_decimation=8, trigger_source=1)
     sleep(100E-3)
-    plot(redpitaya.scope.times, redpitaya.scope.data_ch1)
-    show()
+    plt.plot(redpitaya.scope.times, redpitaya.scope.data_ch1)
+    plt.show()
 
